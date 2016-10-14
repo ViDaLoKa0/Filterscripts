@@ -5,25 +5,17 @@
 #define NOME_BOT OLA_SOU_UM_BOT //NOME DO BOT
 #define ID 100 //ID DO BOT
 
-//palavras que o bot ir· detectar
+//palavras que o bot ir√° detectar
 new FalouHack[] =
 {
 	"hack",
-	"hacke",
-	"hackerzinho",
 	"racker",
-	"hacki",
-	"hackerzin",
-	"raki",
+	"rak",
 	"hask",
-	"raker",
 	"hak",
 	"aim",
-	"aimbot",
-	"hacker",
 	"xitado",
 	"xiter",
-	"haskudo"
 };
 
 public OnPlayerText(playerid, text[])
