@@ -6,175 +6,256 @@
 /_.___/\__, /     |___/_/_____/\__,_/  /_____/\____/_/ |_\__,_/
       /____/
 
-Não Retire os Créditos!!!
+NÃ£o Retire os CrÃ©ditos!!!
 */
 
-#include a_samp //by Samp Team
-#include zcmd //by Zeex
+#include <a_samp> //by SA-MP Team
+#include <Pawn.CMD> //by UrShadow
+//TambÃ©m compÃ¡tivel com ZCMD
+//#include <zcmd> //by Zeex
 
-//Veja se não tem outras dialogs com o mesmo id em seus FS/GM se tiver mude!
-#define D_MUSICA        1
-#define D_AJUDA         2
-#define D_PEDIRMUSICA   3
+#define VERSAO "v1.1"
 
-#define COR_ERRO        0xFF0000FF
-#define COR_INFO        0x00FF00FF
-#define COR_DICA        0x0000FFFF
+#define minutos(%0)	(1000 * %0 * 60)
 
-new pname[MAX_PLAYER_NAME];
-new bool:PediuMusica[MAX_PLAYERS];
+#define V   "{FF0000}"
+#define B   "{FFFFFF}"
+#define A   "{0000FF}"
+
+enum
+{
+	D_TIPOMUSICA = 22000,//Veja se nÃ£o tem outras dialogs com o mesmo id em seus FS/GM se tiver mude!
+	D_MUSICADIR,
+	D_MUSICANOME,
+	D_MUSICAYTB,
+	D_AJUDA,
+	D_PEDIRMUSICA
+};
+
+enum Player_Data
+{
+	Nick[MAX_PLAYER_NAME]
+};
+new Player_Info[MAX_PLAYERS][Player_Data];
+
+static bool: PediuMusica[MAX_PLAYERS char];
 
 public OnFilterScriptInit()
 {
-	print("\n   [FS] Música carregado by ViDa_LoKa   ");
-	print("        Não Retire os Créditos!!!       \n");
-	return 1;
+	print("\n   [FS] MÃºsica "VERSAO" carregado by ViDa_LoKa");
+	print("        NÃ£o Retire os CrÃ©ditos!!!       \n");
+	return true;
 }
 
-public OnFilterScriptExit()
-{
-	return 1;
-}
 public OnPlayerConnect(playerid)
 {
-	PediuMusica[playerid] = false;
-	return 1;
-}
-
-public OnPlayerSpawn(playerid)
-{
-	static nomedoserver[64], str[128];
-    GetConsoleVarAsString("hostname", nomedoserver, sizeof(nomedoserver));
-    format(str, sizeof(str), "O %s contém um sistema de música feito por ViDa_Loka | CMD: /amusica ", nomedoserver);
-	SendClientMessage(playerid, COR_DICA, str);
-	return 1;
+    GetPlayerName(playerid, Player_Info[playerid][Nick], MAX_PLAYER_NAME);
+	PediuMusica{playerid} = false;
+	return true;
 }
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 {
-    if(dialogid == D_MUSICA)
+    switch(dialogid)
     {
-        if(!response)
+        case D_TIPOMUSICA:
         {
-            SendClientMessage(playerid, COR_INFO, "DICA: Comandos do Sistema de Música: ( /amusica )");
-        }
-        else
-        {
-            if(strlen(inputtext) < 1)
-            {
-				SendClientMessage(playerid, COR_ERRO, "ERRO: Insira alguma música!");
-                ShowPlayerDialog(playerid, D_MUSICA, DIALOG_STYLE_INPUT, "Música para todos", "Insira o nome da música desejada!\n(AVISO): Coloque o cantor e o nome da música ou o link do youtube para melhores resultados\n", "Tocar", "Cancelar");
+	        if !response *then
+	        {
+	            SendClientMessage(playerid, -1, ""A"DICA: "B"Comandos do Sistema de MÃºsica: "V"( /amusica )");
+	        }
+	        else
+	        {
+	            switch(listitem)
+	            {
+	                case 0: ShowPlayerDialog(playerid, D_MUSICADIR, DIALOG_STYLE_INPUT, "MÃºsica para todos", ""B"Insira o link direto da mÃºsica desejada!\n"A"[AVISO]: "B"Funcional apenas para o link de download da mÃºsica\n", "Tocar", "Fechar");
+	                case 1: ShowPlayerDialog(playerid, D_MUSICANOME, DIALOG_STYLE_INPUT, "MÃºsica para todos", ""B"Insira o nome da mÃºsica desejada!\n"A"[AVISO]: "B"Coloque o cantor e o nome da mÃºsica ou o link do youtube para melhores resultados\n", "Tocar", "Fechar");
+	                case 2: ShowPlayerDialog(playerid, D_MUSICAYTB, DIALOG_STYLE_INPUT, "MÃºsica para todos", ""B"Insira o id do youtube da mÃºsica desejada!\n"A"[EXEMPLO]: "B"https://www.youtube.com/watch?v="V"GbI7QLCpO70 "B"nesse link o ID Ã© o que Ã© este: "V"\"GbI7QLCpO70\"\n", "Tocar", "Fechar");
+	            }
 			}
-            else
-            {
-			static i, str[128], str2[104+MAX_PLAYER_NAME];
-			GetPlayerName(playerid, pname, MAX_PLAYER_NAME);
-			for( i = GetMaxPlayers() - 1; i > -1; --i)
-			{
-				if(IsPlayerConnected(i))
-				{
-				format(str, sizeof(str), "https://6t.pe/?song=%s", inputtext);
-				PlayAudioStreamForPlayer(i, str);
-				format(str2, sizeof(str2), "[ADMIN] %s colocou a música %s, digite /pmusica se quiser parar!", pname, inputtext);
+		}
+    	case D_MUSICADIR:
+    	{
+	        if !response *then
+	        {
+	            SendClientMessage(playerid, -1, ""A"DICA: "B"Comandos do Sistema de MÃºsica: "V"( /amusica )");
+	        }
+	        else
+	        {
+	            if strlen(inputtext) < 1 *then
+	            {
+					SendClientMessage(playerid, -1, ""V"ERRO: "B"Insira alguma mÃºsica!");
+	                ShowPlayerDialog(playerid, D_MUSICADIR, DIALOG_STYLE_INPUT, "MÃºsica para todos", ""B"Insira o link direto da mÃºsica desejada!\n"A"[AVISO]: "B"Funcional apenas para link de stream (link de download) da mÃºsica\n", "Tocar", "Fechar");
 				}
+	            else
+	            {
+					static str[128], str2[104];
+
+					for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
+					{
+						format(str, sizeof(str), "%s", inputtext);
+						PlayAudioStreamForPlayer(i, str);
+						format(str2, sizeof(str2), ""A"[ADMIN] "V"%s "B"colocou uma mÃºsica, digite /pmusica se quiser parar!", Player_Info[playerid][Nick]);
+					}
+	 				SendClientMessageToAll(-1, str2);
+	            }
+	        }
+    	}
+    	
+    	case D_MUSICANOME:
+    	{
+	        if !response *then
+	        {
+	            SendClientMessage(playerid, -1, ""A"DICA: "B"Comandos do Sistema de MÃºsica: "V"( /amusica )");
+	        }
+	        else
+	        {
+	            if strlen(inputtext) < 1 *then
+	            {
+					SendClientMessage(playerid, -1, ""V"ERRO: "B"Insira alguma mÃºsica!");
+	                ShowPlayerDialog(playerid, D_MUSICAYTB, DIALOG_STYLE_INPUT, "MÃºsica para todos", ""B"Insira o id do youtube da mÃºsica desejada!\n"A"[EXEMPLO]: "B"https://www.youtube.com/watch?v="V"GbI7QLCpO70 "B"nesse link o ID Ã© o que Ã© este: "V"\"GbI7QLCpO70\"\n", "Tocar", "Fechar");
 				}
- 			SendClientMessageToAll(COR_INFO, str2);
-            }
-        }
-        return 1;
+	            else
+	            {
+					static str[128], str2[104];
+
+					for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
+					{
+						format(str, sizeof(str), "https://up-m.ga/?cancion=%s", inputtext);
+						PlayAudioStreamForPlayer(i, str);
+						format(str2, sizeof(str2), ""A"[ADMIN] "V"%s "B"colocou a mÃºsica "V"%s, "B"digite /pmusica se quiser parar!", Player_Info[playerid][Nick], inputtext);
+					}
+	 				SendClientMessageToAll(-1, str2);
+	            }
+	        }
+    	}
+    	
+    	case D_MUSICAYTB:
+    	{
+	        if !response *then
+	        {
+	            SendClientMessage(playerid, -1, ""A"DICA: "B"Comandos do Sistema de MÃºsica: "V"( /amusica )");
+	        }
+	        else
+	        {
+	            if strlen(inputtext) < 1 *then
+	            {
+					SendClientMessage(playerid, -1, ""V"ERRO: "B"Insira alguma mÃºsica!");
+	                ShowPlayerDialog(playerid, D_MUSICANOME, DIALOG_STYLE_INPUT, "MÃºsica para todos", "Insira o nome da mÃºsica desejada!\n(AVISO): Coloque o cantor e o nome da mÃºsica ou o link do youtube para melhores resultados\n", "Tocar", "Cancelar");
+				}
+	            else
+	            {
+					static str[128], str2[104];
+
+					for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
+					{
+						format(str, sizeof(str), "http://ultramendoza-mp3.herokuapp.com/download?v=%s", inputtext);
+						PlayAudioStreamForPlayer(i, str);
+						format(str2, sizeof(str2), ""A"[ADMIN] "V"%s "B"colocou uma mÃºsica, "B"digite /pmusica se quiser parar!", Player_Info[playerid][Nick]);
+					}
+	 				SendClientMessageToAll(-1, str2);
+	            }
+	        }
+    	}
+    	
+	    case D_PEDIRMUSICA:
+	    {
+	        if !response *then
+	        {
+	            SendClientMessage(playerid, -1, ""A"DICA: "B"Comandos do Sistema de MÃºsica: "V"( /amusica )");
+	        }
+	        else
+	        {
+	            if strlen(inputtext) < 1 *then
+	            {
+					SendClientMessage(playerid, -1, ""V"ERRO: "B"Insira alguma mÃºsica!");
+	                ShowPlayerDialog(playerid, D_PEDIRMUSICA, DIALOG_STYLE_INPUT, "Pedir uma MÃºsica", "Insira o nome da mÃºsica desejada!\n[AVISO]: Coloque o cantor e o nome da mÃºsica ou o link do youtube para melhores resultados\n", "Pedir", "Cancelar");
+				}
+	            else
+	            {
+		            SendClientMessage(playerid, -1, ""A"AVISO: "B"MÃºsica enviada com sucesso aos "A"ADMINS!");
+		           	PediuMusica{playerid} = true;
+					SetTimerEx("ResetarPedidoDeMusica", minutos(2), false, "d", playerid);
+					static str2[104];
+
+					for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
+					{
+						if IsPlayerAdmin(i) *then
+						{
+							format(str2, sizeof(str2), ""A"ATENÃ‡ÃƒO ADMINS: "V"%s "B"estÃ¡ pedindo a mÃºsica "A"%s", Player_Info[playerid][Nick], inputtext);
+							SendClientMessage(i, -1, str2);
+						}
+					}
+	            }
+	        }
+	    }
     }
-    if(dialogid == D_PEDIRMUSICA)
-    {
-        if(!response)
-        {
-            SendClientMessage(playerid, COR_DICA, "DICA: Comandos do Sistema de Música: ( /amusica )");
-        }
-        else
-        {
-            if(strlen(inputtext) < 1)
-            {
-				SendClientMessage(playerid, COR_ERRO, "ERRO: Insira alguma música!");
-                ShowPlayerDialog(playerid, D_PEDIRMUSICA, DIALOG_STYLE_INPUT, "Pedir uma Música", "Insira o nome da música desejada!\n[AVISO]: Coloque o cantor e o nome da música ou o link do youtube para melhores resultados\n", "Pedir", "Cancelar");
-			}
-            else
-            {
-            SendClientMessage(playerid, COR_DICA, "AVISO: Música enviada com sucesso aos ADMINS!");
-           	PediuMusica[playerid] = true;
-			SetTimerEx("PedidoDeMusica", 120000, false, "d", playerid);
-			static i, str2[104+MAX_PLAYER_NAME];
-			GetPlayerName(playerid, pname, MAX_PLAYER_NAME);
-			for( i = GetMaxPlayers() - 1; i > -1; --i)
-			{
-				if(IsPlayerAdmin(i))
-				{
-				format(str2, sizeof(str2), "ATENÇÃO ADMINS: %s está pedindo a música %s", pname, inputtext);
-				SendClientMessage(i, COR_INFO, str2);
-				}
-				}
-            }
-        }
-        return 1;
-    }
-    return 1;
+    return false;
 }
-//Funções
-forward PedidoDeMusica(playerid);
-public PedidoDeMusica(playerid)
+//FunÃ§Ãµes
+forward ResetarPedidoDeMusica(playerid);
+public ResetarPedidoDeMusica(playerid)
 {
-    PediuMusica[playerid] = false;
-	return 1;
+    PediuMusica{playerid} = false;
+	return true;
 }
 //Comandos
 CMD:tocarmusica(playerid, params[])
 {
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COR_ERRO, "ERRO: Comando disponível apenas para admins RCON!");
-	ShowPlayerDialog(playerid, D_MUSICA, DIALOG_STYLE_INPUT, "Música para todos", "Insira o nome da música desejada!\n[AVISO]: Coloque o cantor e o nome da música ou o link do youtube para melhores resultados\n", "Tocar", "Cancelar");
-	return 1;
+	if !IsPlayerAdmin(playerid) *then
+		return SendClientMessage(playerid, -1, ""V"ERRO: "B"Comando disponÃ­vel apenas para admins RCON!");
+		
+	ShowPlayerDialog(playerid, D_TIPOMUSICA, DIALOG_STYLE_LIST, "Tipo de MÃºsica", "MÃºsica pelo link direto\nMÃºsica pelo nome\nMÃºsica pelo link do Youtube", "Ok", "Fechar");
+	return true;
 }
+
 CMD:pmusicatodos(playerid, params[])
 {
-	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, COR_ERRO, "ERRO: Comando disponível apenas para admins RCON!");
- 	static i,str[104+MAX_PLAYER_NAME];
-  	GetPlayerName(playerid, pname, MAX_PLAYER_NAME);
-	for( i = GetMaxPlayers() - 1; i > -1; --i)
+	if !IsPlayerAdmin(playerid) *then
+		return SendClientMessage(playerid, -1, ""V"ERRO: "B"Comando disponÃ­vel apenas para admins RCON!");
+		
+	for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
 	{
- 	if(IsPlayerConnected(i))
- 	{
-	StopAudioStreamForPlayer(i);
+ 		if IsPlayerConnected(i) *then
+ 		{
+			StopAudioStreamForPlayer(i);
+		}
 	}
-	}
-	format(str, sizeof(str), "[ADMIN] %s parou a música atual!", pname);
-	SendClientMessageToAll(COR_INFO, str);
-	return 1;
+	static str[128];
+	format(str, sizeof(str), "[ADMIN] %s parou a mÃºsica atual!", Player_Info[playerid][Nick]);
+	SendClientMessageToAll(-1, str);
+	return true;
 }
+
 CMD:pmusica(playerid, params[])
 {
 	StopAudioStreamForPlayer(playerid);
-	SendClientMessage(playerid, COR_INFO, "INFO: A reprodução de sons foi parada!");
-	return 1;
+	SendClientMessage(playerid, -1, ""A"INFO: "B"A reproduÃ§Ã£o de sons foi parada!");
+	return true;
 }
+
 CMD:pedirmusica(playerid, params[])
 {
-	if(PediuMusica[playerid] == false)
+	if !PediuMusica{playerid} *then
 	{
-	ShowPlayerDialog(playerid, D_PEDIRMUSICA, DIALOG_STYLE_INPUT, "Pedir uma Música", "Insira o nome da música desejada!\n[AVISO]: Coloque o cantor e o nome da música ou o link do youtube para melhores resultados\n", "Pedir", "Cancelar");
+		ShowPlayerDialog(playerid, D_PEDIRMUSICA, DIALOG_STYLE_INPUT, "Pedir uma MÃºsica", "Insira o nome da mÃºsica desejada!\n[AVISO]: Coloque o cantor e o nome da mÃºsica ou o link do youtube para melhores resultados\n", "Pedir", "Cancelar");
 	}
 	else
 	{
-	SendClientMessage(playerid, COR_ERRO, "ERRO: Aguarde 2 Minutos para pedir outra música!");
+		SendClientMessage(playerid, -1, ""V"ERRO: "B"Aguarde 2 Minutos para pedir outra mÃºsica!");
 	}
-	return 1;
+	return true;
 }
+
 CMD:amusica(playerid, params[])
 {
-	if(IsPlayerAdmin(playerid))
+	if !IsPlayerAdmin(playerid) *then
 	{
-	ShowPlayerDialog(playerid, D_AJUDA, DIALOG_STYLE_MSGBOX, "Comandos de Música", "COMANDOS ADM: \n\n/tocarmusica - Toca uma música para todos pelo nome ou link do youtube\n/pmusicatodos - Para a música de todos\n\nCOMANDOS PLAYER: \n\n/pmusica - Para a música atual\n/pedirmusica - Envia a música desejada para os admins online\n", "Ok", "");
+		ShowPlayerDialog(playerid, D_AJUDA, DIALOG_STYLE_MSGBOX, "Comandos de MÃºsica", "/pmusica - Para a mÃºsica atual\n/pedirmusica - Envia a mÃºsica desejada para os admins online\n", "Ok", "");
 	}
 	else
 	{
-	ShowPlayerDialog(playerid, D_AJUDA, DIALOG_STYLE_MSGBOX, "Comandos de Música", "/pmusica - Para a música atual\n/pedirmusica - Envia a música desejada para os admins online\n", "Ok", "");
+		ShowPlayerDialog(playerid, D_AJUDA, DIALOG_STYLE_MSGBOX, "Comandos de MÃºsica", "COMANDOS ADM: \n\n/tocarmusica - Toca uma mÃºsica para todos pelo nome ou link do youtube\n/pmusicatodos - Para a mÃºsica de todos\n\nCOMANDOS PLAYER: \n\n/pmusica - Para a mÃºsica atual\n/pedirmusica - Envia a mÃºsica desejada para os admins online\n", "Ok", "");
 	}
-	return 1;
+	return true;
 }
-#error "Não Retire os Créditos!!!"
